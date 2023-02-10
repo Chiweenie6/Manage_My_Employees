@@ -1,0 +1,30 @@
+{
+  "name": "manage_my_employees",
+  "version": "1.0.0",
+  "description": "Manage employees with a command-line interface application using Node.js, Inquirer, and MySQL .",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chiweenie6/Manage_My_Employees.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chiweenie6/Manage_My_Employees/issues"
+  },
+  "homepage": "https://github.com/Chiweenie6/Manage_My_Employees#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "i": "^0.3.7",
+    "inquirer": "^8.2.4",
+    "mysql2": "^3.1.2",
+    "npm": "^9.4.2"
+  }
+}
