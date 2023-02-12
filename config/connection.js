@@ -1,7 +1,7 @@
-const Sequelize = require('sequelize');
+const mysql = require('mysql2');
 require('dotenv').config();
 
-const sequelize = new Sequelize(
+const linkDB = mysql.createConnection(
   process.env.DB_NAME,
   process.env.DB_USER,
   process.env.DB_PASSWORD,
@@ -9,7 +9,8 @@ const sequelize = new Sequelize(
     host: 'localhost',
     dialect: 'mysql',
     port: 3306,
-  }
+  },
+  console.log("Link to company_db successful 👍"
 );
 
-module.exports = sequelize;
+module.exports = linkDB;
