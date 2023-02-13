@@ -200,7 +200,11 @@ const addAnEmployee = () => {
     message: "Manager ID?",
     validate: (input) => {
       if (input === "") {
-      return "Must enter a numbered manager ID.";
+      return "Must enter a valid ID, enter 0 if no manager.";
+    }else {
+      if(input === 0) {
+        return null;
+      }
     }
     return true;
   },
@@ -229,14 +233,14 @@ const viewAllDepartments = () => {
 };
 
 const viewAllEmployees = () => {
-  linkDB.query("SELECT employee.id, employee.first_name, employee.last_name, company_role.title, company_role.salary, department.dep_name, employee.manager_id From ((employee INNER JOIN company_role ON company_role.id = employee.role_id) INNER JOIN department ON department.id = company_role.department_id)", (err, res) => {
+  linkDB.query("SELECT employee.id, employee.first_name, employee.last_name, company_role.title, department.dep_name, company_role.salary, employee.manager_id From ((employee INNER JOIN company_role ON company_role.id = employee.role_id) INNER JOIN department ON department.id = company_role.department_id)", (err, res) => {
     console.table(res);
     userOptions();
   })
 };
 
 const viewAllRoles = () => {
-  linkDB.query("SELECT company_role.id, company_role.title, company_role.salary, department.dep_name From company_role INNER JOIN department ON department.id = company_role.department_id", (err, res) => {
+  linkDB.query("SELECT company_role.id, company_role.title, department.dep_name, company_role.salary From company_role INNER JOIN department ON department.id = company_role.department_id", (err, res) => {
     console.table(res);
     userOptions();
   })
@@ -244,7 +248,12 @@ const viewAllRoles = () => {
 
 const viewCombinedSalaries = () => {};
 
-const viewEmployeesByDepartment = () => {};
+const viewEmployeesByDepartment = () => {
+  linkDB.query("SELECT employee.first_name, employee.last_name, department.dep_name FROM ((employee LEFT JOIN company_role ON company_role.id = employee.role_id) LEFT JOIN department ON department.id = company_role.department_id)", (err, res) => {
+    console.table(res);
+    userOptions();
+  })
+};
 
 const viewEmployeesByManager = () => {};
 

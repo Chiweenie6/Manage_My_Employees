@@ -13,6 +13,7 @@ VALUES ("Manager", 60000, 1),
 -- Data to go into "employee" table
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Tod", "Smith", 1, NULL),
+       ("Jen", "Jensen", 1, NULL),
        ("Lily", "Roberts", 2, 1),
        ("Julie", "Jones", 3, 2),
        ("Kodi", "West", 4, 2);
