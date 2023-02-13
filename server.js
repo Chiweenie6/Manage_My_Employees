@@ -128,32 +128,37 @@ const addARole = () => {
         message: "Position salary?",
         validate: (input) => {
           if (input === "") {
-          return "Must enter a numbered salary.";
-        }
-        return true;
+            return "Must enter a numbered salary.";
+          }
+          return true;
+        },
       },
-    },
-    {
-      type: "number",
-      name: "department_id",
-      message: "Department ID?",
-      validate: (input) => {
-        if (input === "") {
-        return "Must enter a numbered ID.";
-      }
-      return true;
-    },
-  },
+      {
+        type: "number",
+        name: "department_id",
+        message: "Department ID?",
+        validate: (input) => {
+          if (input === "") {
+            return "Must enter a numbered ID.";
+          }
+          return true;
+        },
+      },
     ])
     .then((answer) => {
-      let tableInfo = "INSERT INTO company_role (title, salary, department_id) VALUES (?, ?, ?)";
-      linkDB.query(tableInfo, [answer.title, answer.salary, answer.department_id], (err, res) => {
-        if (err) {
-          throw err;
-        } else {
-          console.log(answer.title + " added to company_role table.");
+      let tableInfo =
+        "INSERT INTO company_role (title, salary, department_id) VALUES (?, ?, ?)";
+      linkDB.query(
+        tableInfo,
+        [answer.title, answer.salary, answer.department_id],
+        (err, res) => {
+          if (err) {
+            throw err;
+          } else {
+            console.log(answer.title + " added to company_role table.");
+          }
         }
-      });
+      );
       userOptions();
     });
 };
@@ -178,47 +183,57 @@ const addAnEmployee = () => {
         message: "Employee last name?",
         validate: (input) => {
           if (input === "") {
-          return "Must enter valid last name.";
-        }
-        return true;
+            return "Must enter valid last name.";
+          }
+          return true;
+        },
       },
-    },
-    {
-      type: "number",
-      name: "role_id",
-      message: "Role ID?",
-      validate: (input) => {
-        if (input === "") {
-        return "Must enter a numbered role ID.";
-      }
-      return true;
-    },
-  },
-  {
-    type: "number",
-    name: "manager_id",
-    message: "Manager ID?",
-    validate: (input) => {
-      if (input === "") {
-      return "Must enter a valid ID, enter 0 if no manager.";
-    }else {
-      if(input === 0) {
-        return null;
-      }
-    }
-    return true;
-  },
-},
+      {
+        type: "number",
+        name: "role_id",
+        message: "Role ID?",
+        validate: (input) => {
+          if (input === "") {
+            return "Must enter a numbered role ID.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "number",
+        name: "manager_id",
+        message: "Manager ID?",
+        validate: (input) => {
+          if (input === "") {
+            return "Must enter a valid ID, enter 0 if no manager.";
+          } else {
+            if (input === 0) {
+              return null;
+            }
+          }
+          return true;
+        },
+      },
     ])
     .then((answer) => {
-      let tableInfo = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
-      linkDB.query(tableInfo, [answer.first_name, answer.last_name, answer.role_id, answer.manager_id], (err, res) => {
-        if (err) {
-          throw err;
-        } else {
-          console.log(answer.first_name + " added to employee table.");
+      let tableInfo =
+        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
+      linkDB.query(
+        tableInfo,
+        [
+          answer.first_name,
+          answer.last_name,
+          answer.role_id,
+          answer.manager_id,
+        ],
+        (err, res) => {
+          if (err) {
+            throw err;
+          } else {
+            console.log(answer.first_name + " added to employee table.");
+          }
         }
-      });
+      );
       userOptions();
     });
 };
@@ -233,34 +248,56 @@ const viewAllDepartments = () => {
 };
 
 const viewAllEmployees = () => {
-  linkDB.query("SELECT employee.id, employee.first_name, employee.last_name, company_role.title, department.dep_name, company_role.salary, employee.manager_id From ((employee INNER JOIN company_role ON company_role.id = employee.role_id) INNER JOIN department ON department.id = company_role.department_id)", (err, res) => {
-    console.table(res);
-    userOptions();
-  })
+  linkDB.query(
+    "SELECT employee.id, employee.first_name, employee.last_name, company_role.title, department.dep_name, company_role.salary, employee.manager_id From ((employee INNER JOIN company_role ON company_role.id = employee.role_id) INNER JOIN department ON department.id = company_role.department_id)",
+    (err, res) => {
+      console.table(res);
+      userOptions();
+    }
+  );
 };
 
 const viewAllRoles = () => {
-  linkDB.query("SELECT company_role.id, company_role.title, department.dep_name, company_role.salary From company_role INNER JOIN department ON department.id = company_role.department_id", (err, res) => {
-    console.table(res);
-    userOptions();
-  })
+  linkDB.query(
+    "SELECT company_role.id, company_role.title, department.dep_name, company_role.salary From company_role INNER JOIN department ON department.id = company_role.department_id",
+    (err, res) => {
+      console.table(res);
+      userOptions();
+    }
+  );
 };
 
 const viewCombinedSalaries = () => {};
 
+
+
+
 const viewEmployeesByDepartment = () => {
-  linkDB.query("SELECT employee.first_name, employee.last_name, department.dep_name FROM ((employee LEFT JOIN company_role ON company_role.id = employee.role_id) LEFT JOIN department ON department.id = company_role.department_id)", (err, res) => {
-    console.table(res);
-    userOptions();
-  })
+  linkDB.query(
+    "SELECT employee.first_name, employee.last_name, department.dep_name FROM ((employee LEFT JOIN company_role ON company_role.id = employee.role_id) LEFT JOIN department ON department.id = company_role.department_id)",
+    (err, res) => {
+      console.table(res);
+      userOptions();
+    }
+  );
 };
 
-const viewEmployeesByManager = () => {};
+const viewEmployeesByManager = () => {
+  linkDB.query(
+    "SELECT a.first_name, a.last_name, b.first_name AS manager FROM employee a INNER JOIN employee b ON a.manager_id = b.id",
+    (err, res) => {
+      console.table(res);
+      userOptions();
+    }
+  );
+};
 
 const updateAnEmployeeRole = () => {};
 
 const updateEmployeeManagers = () => {};
 
-const allDone = () => {};
+const allDone = () => {
+  return;
+};
 
 userOptions();
