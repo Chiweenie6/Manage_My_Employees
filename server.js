@@ -2,6 +2,7 @@ const linkDB = require("./config/connection");
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
+const { INTEGER } = require("sequelize");
 
 linkDB.connect((err) => {
   if (err) {
@@ -84,7 +85,7 @@ const addADepartment = () => {
     .prompt([
       {
         type: "input",
-        name: "newDep",
+        name: "dep_name",
         message: "Input new department name?",
         validate: (input) => {
           if (input === "") {
@@ -95,12 +96,12 @@ const addADepartment = () => {
       },
     ])
     .then((answer) => {
-      let tableInfo = `INSERT INTO department (dep_name) VALUES (?)`;
-      linkDB.query(tableInfo, answer.newDep, (err, res) => {
+      let tableInfo = "INSERT INTO department (dep_name) VALUES (?)";
+      linkDB.query(tableInfo, answer.dep_name, (err, res) => {
         if (err) {
           throw err;
         } else {
-          console.log(answer.newDep + res);
+          console.log(answer.dep_name + " added to department table.");
         }
       });
       userOptions();
@@ -108,10 +109,115 @@ const addADepartment = () => {
 };
 
 const addARole = () => {
-  
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "title",
+        message: "Input position title?",
+        validate: (input) => {
+          if (input === "") {
+            return "Must enter valid department";
+          }
+          return true;
+        },
+      },
+      {
+        type: "number",
+        name: "salary",
+        message: "Position salary?",
+        validate: (input) => {
+          if (input === "") {
+          return "Must enter a numbered salary.";
+        }
+        return true;
+      },
+    },
+    {
+      type: "number",
+      name: "department_id",
+      message: "Department ID?",
+      validate: (input) => {
+        if (input === "") {
+        return "Must enter a numbered ID.";
+      }
+      return true;
+    },
+  },
+    ])
+    .then((answer) => {
+      let tableInfo = "INSERT INTO company_role (title, salary, department_id) VALUES (?, ?, ?)";
+      linkDB.query(tableInfo, [answer.title, answer.salary, answer.department_id], (err, res) => {
+        if (err) {
+          throw err;
+        } else {
+          console.log(answer.title + " added to company_role table.");
+        }
+      });
+      userOptions();
+    });
 };
 
-const addAnEmployee = () => {};
+const addAnEmployee = () => {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "first_name",
+        message: "Employee first name?",
+        validate: (input) => {
+          if (input === "") {
+            return "Must enter valid first name";
+          }
+          return true;
+        },
+      },
+      {
+        type: "input",
+        name: "last_name",
+        message: "Employee last name?",
+        validate: (input) => {
+          if (input === "") {
+          return "Must enter valid last name.";
+        }
+        return true;
+      },
+    },
+    {
+      type: "number",
+      name: "role_id",
+      message: "Role ID?",
+      validate: (input) => {
+        if (input === "") {
+        return "Must enter a numbered role ID.";
+      }
+      return true;
+    },
+  },
+  {
+    type: "number",
+    name: "manager_id",
+    message: "Manager ID?",
+    validate: (input) => {
+      if (input === "") {
+      return "Must enter a numbered manager ID.";
+    }
+    return true;
+  },
+},
+    ])
+    .then((answer) => {
+      let tableInfo = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
+      linkDB.query(tableInfo, [answer.first_name, answer.last_name, answer.role_id, answer.manager_id], (err, res) => {
+        if (err) {
+          throw err;
+        } else {
+          console.log(answer.first_name + " added to employee table.");
+        }
+      });
+      userOptions();
+    });
+};
 
 const deleteThings = () => {};
 
