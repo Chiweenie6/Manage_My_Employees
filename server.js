@@ -229,14 +229,14 @@ const viewAllDepartments = () => {
 };
 
 const viewAllEmployees = () => {
-  linkDB.query("SELECT * FROM employee", (err, res) => {
+  linkDB.query("SELECT employee.id, employee.first_name, employee.last_name, company_role.title, company_role.salary, department.dep_name, employee.manager_id From ((employee INNER JOIN company_role ON company_role.id = employee.role_id) INNER JOIN department ON department.id = company_role.department_id)", (err, res) => {
     console.table(res);
     userOptions();
   })
 };
 
 const viewAllRoles = () => {
-  linkDB.query("SELECT * FROM company_role", (err, res) => {
+  linkDB.query("SELECT company_role.id, company_role.title, company_role.salary, department.dep_name From company_role INNER JOIN department ON department.id = company_role.department_id", (err, res) => {
     console.table(res);
     userOptions();
   })
