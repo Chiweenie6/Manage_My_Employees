@@ -9,7 +9,7 @@ linkDatabase.connect((err) => {
 } else {
   console.log("Let's Begin 😁. What would you like to do?")
 }
-)
+});
 
 const whatToDo = () => {
   const userOptions = () => {
@@ -32,6 +32,7 @@ const whatToDo = () => {
             "View employees by manager",
             "Update an employee role",
             "Update employee managers",
+            "All Done 🛑"
           ],
         },
       ])
@@ -82,7 +83,7 @@ const whatToDo = () => {
   const viewAllDepartments = () => {
     const findAllDepartments = `SELECT department.id AS id,
     dep_name as department from department`;
-    sequelize.promise().query(findAllDepartments, (err, res) => {
+    linkDatabase.promise().query(findAllDepartments, (err, res) => {
       if (err) { 
         throw err;
       } else {
@@ -91,4 +92,14 @@ const whatToDo = () => {
       }
     });
   };
+  userOptions();
 };
+
+
+
+
+
+
+
+
+whatToDo();
