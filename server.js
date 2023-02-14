@@ -401,8 +401,8 @@ const updateAnEmployeeRole = () => {
             type: "list",
             name: "employeeName",
             message: "Choose employee to update?",
-            choices: employeeList,
-          },
+            choices: employeeList
+          }
         ])
         .then((answer) => {
           let employeeID;
@@ -470,6 +470,9 @@ const updateEmployeeManager = () => {
   let tableInfo =
     "SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id FROM employee";
   linkDB.query(tableInfo, (err, res) => {
+    if (err) {
+      throw err;
+    } else {
     const employeeList = [];
     res.forEach((employee) => {
       employeeList.push(employee.first_name + " " + employee.last_name);
@@ -486,8 +489,8 @@ const updateEmployeeManager = () => {
           type: "list",
           name: "manager",
           message: "Choose manager?",
-          choices: employeeList,
-        },
+          choices: employeeList
+        }
       ])
       .then((answer) => {
         console.log(answer);
@@ -498,18 +501,18 @@ const updateEmployeeManager = () => {
           if (
             answer.employeeName ===
             employee.first_name + " " + employee.last_name
-          );
+          )
           {
             employeeID = employee.id;
-            console.log(employeeID);
+            console.log(employeeID + "💡");
           }
           if (
             answer.manager ===
             employee.first_name + " " + employee.last_name
-          );
+          )
           {
             managerID = employee.id;
-            console.log(managerID);
+            console.log(managerID + "👀");
           }
         });
 
@@ -519,13 +522,15 @@ const updateEmployeeManager = () => {
           if (err) {
             throw err;
           } else {
-            console.log("Employee's New Manager updated. 👍");
+            console.log("Employee's New Manager updated. ✍️");
             userOptions();
           }
         });
       });
+    }
   });
 };
+
 const allDone = () => {
   return;
 };
