@@ -421,7 +421,7 @@ const viewAllDepartments = () => {
 // View all employees; showing id, name, job title, department, salary, manager
 const viewAllEmployees = () => {
   linkDB.query(
-    "SELECT employee.id AS ID, employee.first_name AS FirstName, employee.last_name AS LastName, company_role.title AS Position, department.dep_name AS Department, company_role.salary AS Salary, b.first_name AS Manager From (((employee INNER JOIN company_role ON company_role.id = employee.role_id) INNER JOIN department ON department.id = company_role.department_id) LEFT JOIN employee b ON employee.manager_id = b.id) ORDER by employee.id ASC",
+    "SELECT employee.id AS ID, employee.first_name AS FirstName, employee.last_name AS LastName, company_role.title AS Position, department.dep_name AS Department, company_role.salary AS Salary, CONCAT (b.first_name, ' ', b.last_name) AS Manager From (((employee INNER JOIN company_role ON company_role.id = employee.role_id) INNER JOIN department ON department.id = company_role.department_id) LEFT JOIN employee b ON employee.manager_id = b.id) ORDER by employee.id ASC",
     (err, res) => {
       console.table(res);
       userOptions();
@@ -465,7 +465,7 @@ const viewEmployeesByDepartment = () => {
 // View all employees ordered by their manager
 const viewEmployeesByManager = () => {
   linkDB.query(
-    "SELECT a.first_name AS FirstName, a.last_name AS LastName, b.first_name AS Manager FROM employee a LEFT JOIN employee b ON a.manager_id = b.id",
+    "SELECT a.first_name AS FirstName, a.last_name AS LastName, CONCAT (b.first_name, ' ', b.last_name) AS Manager FROM employee a LEFT JOIN employee b ON a.manager_id = b.id",
     (err, res) => {
       console.table(res);
       userOptions();
