@@ -7,13 +7,13 @@ USE company_db;
 -- Makes "department" table inside company_db
 CREATE TABLE department (
   id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-  dep_name VARCHAR(30) NOT NULL
+  dep_name VARCHAR(30)
 );
 
 -- Makes "company_role" table inside company_db
 CREATE TABLE company_role (
   id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-  title VARCHAR(30) NOT NULL,
+  title VARCHAR(30),
   salary DECIMAL(20, 2) NOT NULL,
   department_id INT NOT NULL,
   FOREIGN KEY (department_id) REFERENCES department(id)

@@ -25,6 +25,8 @@ const userOptions = () => {
           "Add a department",
           "Add a role",
           "Add an employee",
+          "Delete a department",
+          "Delete a role",
           "Delete an employee",
           "View all departments",
           "View all employees",
@@ -48,6 +50,12 @@ const userOptions = () => {
           break;
         case "Add an employee":
           addAnEmployee();
+          break;
+        case "Delete a department":
+          deleteADepartment();
+          break;
+        case "Delete a role":
+          deleteARole();
           break;
         case "Delete an employee":
           deleteAnEmployee();
@@ -272,6 +280,88 @@ const addAnEmployee = () => {
     });
 };
 
+const deleteADepartment = () => {
+  let tableInfo = "SELECT department.id, department.dep_name FROM department";
+  linkDB.query(tableInfo, (err, res) => {
+    if (err) {
+      throw err;
+    } else {
+      let departmentList = [];
+      res.forEach((department) => {
+        departmentList.push(department.dep_name);
+      });
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "departmentName",
+            message: "Select department to remove?",
+            choices: departmentList
+          }
+        ])
+        .then((answer) => {
+          let departmentID;
+          res.forEach((department) => {
+            if (answer.departmentName === department.dep_name) {
+              departmentID = department.id;
+            }
+          });
+          let tableInfo = "DELETE FROM department WHERE department.id = ?";
+          linkDB.query(tableInfo, [departmentID], (err) => {
+            if (err) {
+              throw err;
+            } else {
+              console.log("Selected department Deleted. 🔥");
+              userOptions();
+            }
+          });
+        });
+    }
+  });
+};
+
+// Delete selected role from the tables
+const deleteARole = () => {
+  let tableInfo =
+    "SELECT company_role.id, company_role.title FROM company_role";
+  linkDB.query(tableInfo, (err, res) => {
+    if (err) {
+      throw err;
+    } else {
+      let roleList = [];
+      res.forEach((role) => {
+        roleList.push(role.title);
+      });
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "role",
+            message: "Select company role to remove?",
+            choices: roleList
+          }
+        ])
+        .then((answer) => {
+          let roleID;
+          res.forEach((role) => {
+            if (answer.role === role.title) {
+              roleID = role.id;
+            }
+          });
+          let tableInfo = "DELETE FROM company_role WHERE company_role.id = ?";
+          linkDB.query(tableInfo, [roleID], (err) => {
+            if (err) {
+              throw err;
+            } else {
+              console.log("Selected role Deleted. 🔥");
+              userOptions();
+            }
+          });
+        });
+    }
+  });
+};
+
 // Delete selected employee from table
 const deleteAnEmployee = () => {
   let tableInfo =
@@ -401,8 +491,8 @@ const updateAnEmployeeRole = () => {
             type: "list",
             name: "employeeName",
             message: "Choose employee to update?",
-            choices: employeeList
-          }
+            choices: employeeList,
+          },
         ])
         .then((answer) => {
           let employeeID;
@@ -473,60 +563,58 @@ const updateEmployeeManager = () => {
     if (err) {
       throw err;
     } else {
-    const employeeList = [];
-    res.forEach((employee) => {
-      employeeList.push(employee.first_name + " " + employee.last_name);
-    });
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "employeeName",
-          message: "Select employee with new manager?",
-          choices: employeeList,
-        },
-        {
-          type: "list",
-          name: "manager",
-          message: "Choose manager?",
-          choices: employeeList
-        }
-      ])
-      .then((answer) => {
-        console.log(answer);
-
-        let managerID;
-        let employeeID;
-        res.forEach((employee) => {
-          if (
-            answer.employeeName ===
-            employee.first_name + " " + employee.last_name
-          )
-          {
-            employeeID = employee.id;
-            console.log(employeeID + "💡");
-          }
-          if (
-            answer.manager ===
-            employee.first_name + " " + employee.last_name
-          )
-          {
-            managerID = employee.id;
-            console.log(managerID + "👀");
-          }
-        });
-
-        let tableInfo =
-          "UPDATE employee SET employee.manager_id = ? WHERE employee.id = ?";
-        linkDB.query(tableInfo, [managerID, employeeID], (err) => {
-          if (err) {
-            throw err;
-          } else {
-            console.log("Employee's New Manager updated. ✍️");
-            userOptions();
-          }
-        });
+      const employeeList = [];
+      res.forEach((employee) => {
+        employeeList.push(employee.first_name + " " + employee.last_name);
       });
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "employeeName",
+            message: "Select employee with new manager?",
+            choices: employeeList,
+          },
+          {
+            type: "list",
+            name: "manager",
+            message: "Choose manager?",
+            choices: employeeList,
+          },
+        ])
+        .then((answer) => {
+          console.log(answer);
+
+          let managerID;
+          let employeeID;
+          res.forEach((employee) => {
+            if (
+              answer.employeeName ===
+              employee.first_name + " " + employee.last_name
+            ) {
+              employeeID = employee.id;
+              console.log(employeeID + "💡");
+            }
+            if (
+              answer.manager ===
+              employee.first_name + " " + employee.last_name
+            ) {
+              managerID = employee.id;
+              console.log(managerID + "👀");
+            }
+          });
+
+          let tableInfo =
+            "UPDATE employee SET employee.manager_id = ? WHERE employee.id = ?";
+          linkDB.query(tableInfo, [managerID, employeeID], (err) => {
+            if (err) {
+              throw err;
+            } else {
+              console.log("Employee's New Manager updated. ✍️");
+              userOptions();
+            }
+          });
+        });
     }
   });
 };
