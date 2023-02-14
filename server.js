@@ -267,10 +267,15 @@ const viewAllRoles = () => {
   );
 };
 
-const viewCombinedSalaries = () => {};
-
-
-
+const viewCombinedSalaries = () => {
+  linkDB.query(
+    "SELECT department.id, department.dep_name, SUM(salary) AS total_salary FROM company_role INNER JOIN department ON department.id = company_role.department_id GROUP BY company_role.department_id",
+    (err, res) => {
+      console.table(res);
+      userOptions();
+    }
+  );
+};
 
 const viewEmployeesByDepartment = () => {
   linkDB.query(
