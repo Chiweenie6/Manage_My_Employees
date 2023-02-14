@@ -2,7 +2,7 @@ const linkDB = require("./config/connection");
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
-const { INTEGER } = require("sequelize");
+const { INTEGER, NUMBER, DECIMAL } = require("sequelize");
 
 // Connect to database
 linkDB.connect((err) => {
@@ -127,45 +127,51 @@ const addARole = () => {
         },
       },
       {
-        type: "number",
+        type: "input",
         name: "salary",
         message: "Position salary?",
         validate: (input) => {
-          if (input === "") {
+          let ok = isNaN(parseInt(input));
+          if (ok) {
             return "Must enter a numbered salary.";
           }
           return true;
         },
-      },
-      {
-        type: "number",
-        name: "department_id",
-        message: "Department ID?",
-        validate: (input) => {
-          if (input === "") {
-            return "Must enter a numbered ID.";
-          }
-          return true;
-        },
-      },
+      }
     ])
     .then((answer) => {
-      let tableInfo =
-        "INSERT INTO company_role (title, salary, department_id) VALUES (?, ?, ?)";
-      linkDB.query(
-        tableInfo,
-        [answer.title, answer.salary, answer.department_id],
-        (err, res) => {
-          if (err) {
-            throw err;
-          } else {
-            console.log(answer.title + " added to company_role table.");
-          }
+      const newRole = [answer.title, answer.salary];
+      let tableInfo = "SELECT department.id, department.dep_name FROM department";
+      linkDB.query(tableInfo, (err, info) => {
+        if (err) {
+          throw err;
+        } else {
+          const roleDepartment = info.map(({id, dep_name}) => ({ name: dep_name, value:id}));
+          inquirer.prompt([
+            {
+              type: "list",
+              name: "department",
+              message: "Department role belongs to?",
+              choices: roleDepartment
+            }
+          ])
+          .then((answer) => {
+            const roleDepartment = answer.department;
+            newRole.push(roleDepartment);
+            let tableInfo = "INSERT INTO company_role (title, salary, department_id) VALUES (?, ?, ?)";
+            linkDB.query(tableInfo, newRole, (err) => {
+              if (err) {
+                throw err;
+              } else {
+                console.log("New Role added. 👍");
+                userOptions();
+              }
+            })
+          })
         }
-      );
-      userOptions();
-    });
-};
+      })
+    })
+  }
 
 // Add new employee to table
 const addAnEmployee = () => {
@@ -192,110 +198,74 @@ const addAnEmployee = () => {
           }
           return true;
         },
-      },
+      }
     ])
     .then((answer) => {
       const newEmployee = [answer.first_name, answer.last_name];
-      let tableInfo = "SELECT company_role.id, company_role.title FROM company_role";
+      let tableInfo =
+        "SELECT company_role.id, company_role.title FROM company_role";
       linkDB.query(tableInfo, (err, info) => {
         if (err) {
           throw err;
         } else {
-          const employeeRoles = info.map(({id, title}) => ({name: title, value: id}));
-          inquirer.prompt([
-            {
-            type: "list",
-            name: "role",
-            message: "Choose new employee's position?",
-            choices: employeeRoles
-          }
-          ])
-          .then((answer) => {
-            let newEmployeeRole = answer.role;
-            newEmployee.push(newEmployeeRole);
-            let tableInfo = "SELECT * FROM employee";
-            linkDB.query(tableInfo, (err, info) => {
-              if (err) {
-                throw err;
-              } else {
-                const managers = info.map(({id, first_name, last_name}) => ({name: first_name + " " + last_name, value: id}));
-                inquirer.prompt([
-                  {
-                    type: "list",
-                    name: "manager",
-                    message: "Who is the employee's manager?",
-                    choices: managers
-                  }
-                ])
-                .then((answer) => {
-                  const employeeManager = answer.manager;
-                  newEmployee.push(employeeManager);
-                  let tableInfo = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
-                  linkDB.query(tableInfo, newEmployee, (err) => {
-                    if (err) {
-                      throw err;
-                    } else {
-                      console.log("New Employee added. 👍");
-                      userOptions();
-                    }
-                  })
-                })
+          const employeeRoles = info.map(({ id, title }) => ({
+            name: title,
+            value: id,
+          }));
+          inquirer
+            .prompt([
+              {
+                type: "list",
+                name: "role",
+                message: "Choose new employee's position?",
+                choices: employeeRoles
               }
-            })
-          })
+            ])
+            .then((answer) => {
+              let newEmployeeRole = answer.role;
+              newEmployee.push(newEmployeeRole);
+              let tableInfo = "SELECT * FROM employee";
+              linkDB.query(tableInfo, (err, info) => {
+                if (err) {
+                  throw err;
+                } else {
+                  const managers = info.map(
+                    ({ id, first_name, last_name }) => ({
+                      name: first_name + " " + last_name,
+                      value: id,
+                    })
+                  );
+                  inquirer
+                    .prompt([
+                      {
+                        type: "list",
+                        name: "manager",
+                        message: "Who is the employee's manager?",
+                        choices: managers,
+                      },
+                    ])
+                    .then((answer) => {
+                      const employeeManager = answer.manager;
+                      newEmployee.push(employeeManager);
+                      let tableInfo =
+                        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
+                      linkDB.query(tableInfo, newEmployee, (err) => {
+                        if (err) {
+                          throw err;
+                        } else {
+                          console.log("New Employee added. 👍");
+                          userOptions();
+                        }
+                      });
+                    });
+                }
+              });
+            });
         }
-      })
-    })
-  }
-//       {
-//         type: "input",
-//         name: "role_id",
-//         message: "Role ID?",
-//         validate: (input) => {
-//           if (input === "" || input !== INT) {
-//             return "Must enter a numbered role ID.";
-//           }
-//           return true;
-//         },
-//       },
-//       {
-//         type: "input",
-//         name: "manager_id",
-//         message: "Manager ID?",
-//         validate: (input) => {
-//           if (input === "" || input !== INT) {
-//             return "Must enter a valid ID, enter 0 if no manager.";
-//           } else {
-//             if (input === 0) {
-//               return null;
-//             }
-//           }
-//           return true;
-//         },
-//       },
-//     ])
-//     .then((answer) => {
-//       let tableInfo =
-//         "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
-//       linkDB.query(
-//         tableInfo,
-//         [
-//           answer.first_name,
-//           answer.last_name,
-//           answer.role_id,
-//           answer.manager_id,
-//         ],
-//         (err, res) => {
-//           if (err) {
-//             throw err;
-//           } else {
-//             console.log(answer.first_name + " added to employee table.");
-//           }
-//         }
-//       );
-//       userOptions();
-//     });
-// };
+      });
+    });
+};
+
 
 const deleteThings = () => {};
 
