@@ -13,14 +13,14 @@ Manage employees with a command-line interface application using Node.js, Inquir
   - [License](#License)
 
 ## Description
-  An application used to manage employee information using a command-line interface. Technologies involved include MySQL, Node.js and Inquirer. Gives the ability to view and alter employee information including adding new employees, deleting old employees and updating current employee information.
+  An application used to manage employee information using a command-line interface. Technologies involved include MySQL, Node.js and Inquirer. Gives the ability to view and alter employee information including adding new employees, company roles and departments as well as deleting old employees, roles and departments which are no longer being used and updating current employee information.
   
   link to deployed applicaion:
   
   
 
 ## Usage
-  To easlily view and interect with employee information. Having the ability to view employees, departments and roles. In addition to viewing records, they can also be altered by adding or removing new employees and updating current employee information.
+  To easlily view and interect with employee information. Having the ability to view employees, salaries, departments and roles. In addition to viewing the records, they can also be altered by adding, removing or updating new employees, company roles and departments. All data can be seen in organized tables by choosing to view different types of information.
   
   Image:   
  
@@ -28,7 +28,7 @@ Manage employees with a command-line interface application using Node.js, Inquir
 
 
 ## Installation
-  Copy application files into code.vs and then input "npm install" into the command-line. Then type "npm start" into command-line.
+  Copy application files into code.vs and then input "npm install" into the command-line. Then open mysql by typing "mysql -u yourDB_USERname -p" into the command-line and type in your password. Once logged in to mysql you need to source the sql files by typing "source DB/schema.sql;" and "source DB/seeds.sql;" into the mysql command-line. Once sourced, exit mysql by typing "exit". When back in the normal command-line, type "npm start" into the command-line and the user options list will be pulled up and you can choose what you wish to do.
 
 ## Contributing
   n/a
