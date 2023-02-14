@@ -25,7 +25,7 @@ const userOptions = () => {
           "Add a department",
           "Add a role",
           "Add an employee",
-          "Delete departments, roles and employees",
+          "Delete an employee",
           "View all departments",
           "View all employees",
           "View all roles",
@@ -49,8 +49,8 @@ const userOptions = () => {
         case "Add an employee":
           addAnEmployee();
           break;
-        case "Delete departments, roles and employees":
-          deleteThings();
+        case "Delete an employee":
+          deleteAnEmployee();
           break;
         case "View all departments":
           viewAllDepartments();
@@ -131,47 +131,53 @@ const addARole = () => {
         name: "salary",
         message: "Position salary?",
         validate: (input) => {
-          let ok = isNaN(parseInt(input));
-          if (ok) {
+          let notNumber = isNaN(parseInt(input));
+          if (notNumber) {
             return "Must enter a numbered salary.";
           }
           return true;
         },
-      }
+      },
     ])
     .then((answer) => {
       const newRole = [answer.title, answer.salary];
-      let tableInfo = "SELECT department.id, department.dep_name FROM department";
+      let tableInfo =
+        "SELECT department.id, department.dep_name FROM department";
       linkDB.query(tableInfo, (err, info) => {
         if (err) {
           throw err;
         } else {
-          const roleDepartment = info.map(({id, dep_name}) => ({ name: dep_name, value:id}));
-          inquirer.prompt([
-            {
-              type: "list",
-              name: "department",
-              message: "Department role belongs to?",
-              choices: roleDepartment
-            }
-          ])
-          .then((answer) => {
-            const roleDepartment = answer.department;
-            newRole.push(roleDepartment);
-            let tableInfo = "INSERT INTO company_role (title, salary, department_id) VALUES (?, ?, ?)";
-            linkDB.query(tableInfo, newRole, (err) => {
-              if (err) {
-                throw err;
-              } else {
-                console.log("New Role added. 👍");
-                userOptions();
-              }
-            })
-          })
+          const roleDepartment = info.map(({ id, dep_name }) => ({
+            name: dep_name,
+            value: id,
+          }));
+          inquirer
+            .prompt([
+              {
+                type: "list",
+                name: "department",
+                message: "Department role belongs to?",
+                choices: roleDepartment,
+              },
+            ])
+            .then((answer) => {
+              const roleDepartment = answer.department;
+              newRole.push(roleDepartment);
+              let tableInfo =
+                "INSERT INTO company_role (title, salary, department_id) VALUES (?, ?, ?)";
+              linkDB.query(tableInfo, newRole, (err) => {
+                if (err) {
+                  throw err;
+                } else {
+                  console.log("New Role added. 👍");
+                  userOptions();
+                }
+              });
+            });
         }
-      })
-    })
-  }
+      });
+    });
+};
 
 // Add new employee to table
 const addAnEmployee = () => {
@@ -198,7 +204,7 @@ const addAnEmployee = () => {
           }
           return true;
         },
-      }
+      },
     ])
     .then((answer) => {
       const newEmployee = [answer.first_name, answer.last_name];
@@ -218,8 +224,8 @@ const addAnEmployee = () => {
                 type: "list",
                 name: "role",
                 message: "Choose new employee's position?",
-                choices: employeeRoles
-              }
+                choices: employeeRoles,
+              },
             ])
             .then((answer) => {
               let newEmployeeRole = answer.role;
@@ -266,21 +272,66 @@ const addAnEmployee = () => {
     });
 };
 
-
-const deleteThings = () => {};
+// Delete selected employee from table
+const deleteAnEmployee = () => {
+  let tableInfo =
+    "SELECT employee.id, employee.first_name, employee.last_name FROM employee";
+  linkDB.query(tableInfo, (err, res) => {
+    if (err) {
+      throw err;
+    } else {
+      let employeeList = [];
+      res.forEach((employee) => {
+        employeeList.push(employee.first_name + " " + employee.last_name);
+      });
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "employeeName",
+            message: "Select employee to remove?",
+            choices: employeeList,
+          },
+        ])
+        .then((answer) => {
+          let employeeID;
+          res.forEach((employee) => {
+            if (
+              answer.employeeName ===
+              employee.first_name + " " + employee.last_name
+            ) {
+              employeeID = employee.id;
+            }
+          });
+          let tableInfo = "DELETE FROM employee WHERE employee.id = ?";
+          linkDB.query(tableInfo, [employeeID], (err) => {
+            if (err) {
+              throw err;
+            } else {
+              console.log("Selected Employee Deleted. 🔥");
+              userOptions();
+            }
+          });
+        });
+    }
+  });
+};
 
 // View all departments
 const viewAllDepartments = () => {
-  linkDB.query("SELECT * FROM department", (err, res) => {
-    console.table(res);
-    userOptions();
-  });
+  linkDB.query(
+    "SELECT department.id AS ID, department.dep_name AS Department FROM department ORDER by department.id ASC",
+    (err, res) => {
+      console.table(res);
+      userOptions();
+    }
+  );
 };
 
 // View all employees showing id, name, job title, department, salary, manager
 const viewAllEmployees = () => {
   linkDB.query(
-    "SELECT employee.id, employee.first_name, employee.last_name, company_role.title, department.dep_name, company_role.salary, b.first_name AS manager From (((employee INNER JOIN company_role ON company_role.id = employee.role_id) INNER JOIN department ON department.id = company_role.department_id) LEFT JOIN employee b ON employee.manager_id = b.id)",
+    "SELECT employee.id AS ID, employee.first_name AS FirstName, employee.last_name AS LastName, company_role.title AS Position, department.dep_name AS Department, company_role.salary AS Salary, b.first_name AS Manager From (((employee INNER JOIN company_role ON company_role.id = employee.role_id) INNER JOIN department ON department.id = company_role.department_id) LEFT JOIN employee b ON employee.manager_id = b.id) ORDER by employee.id ASC",
     (err, res) => {
       console.table(res);
       userOptions();
@@ -291,7 +342,7 @@ const viewAllEmployees = () => {
 // View all company roles showing role Id, job title, department, salary
 const viewAllRoles = () => {
   linkDB.query(
-    "SELECT company_role.id, company_role.title, department.dep_name, company_role.salary From company_role INNER JOIN department ON department.id = company_role.department_id",
+    "SELECT company_role.id AS ID, company_role.title AS Position, department.dep_name AS Department, company_role.salary AS Salary From company_role INNER JOIN department ON department.id = company_role.department_id ORDER by company_role.id ASC",
     (err, res) => {
       console.table(res);
       userOptions();
@@ -302,7 +353,7 @@ const viewAllRoles = () => {
 // View the total combined salaries of each department
 const viewCombinedSalaries = () => {
   linkDB.query(
-    "SELECT department.id, department.dep_name, SUM(salary) AS total_salary FROM company_role INNER JOIN department ON department.id = company_role.department_id GROUP BY company_role.department_id",
+    "SELECT department.id AS ID, department.dep_name AS Departmment, SUM(salary) AS Total_Salary FROM company_role INNER JOIN department ON department.id = company_role.department_id GROUP BY company_role.department_id",
     (err, res) => {
       console.table(res);
       userOptions();
@@ -313,7 +364,7 @@ const viewCombinedSalaries = () => {
 // View all employee's ordered by department
 const viewEmployeesByDepartment = () => {
   linkDB.query(
-    "SELECT employee.first_name, employee.last_name, department.dep_name FROM ((employee LEFT JOIN company_role ON company_role.id = employee.role_id) LEFT JOIN department ON department.id = company_role.department_id)",
+    "SELECT employee.first_name AS FirstName, employee.last_name AS LastName, department.dep_name AS Department FROM ((employee LEFT JOIN company_role ON company_role.id = employee.role_id) LEFT JOIN department ON department.id = company_role.department_id)",
     (err, res) => {
       console.table(res);
       userOptions();
@@ -324,7 +375,7 @@ const viewEmployeesByDepartment = () => {
 // View all employees ordered by their manager
 const viewEmployeesByManager = () => {
   linkDB.query(
-    "SELECT a.first_name, a.last_name, b.first_name AS manager FROM employee a LEFT JOIN employee b ON a.manager_id = b.id",
+    "SELECT a.first_name AS FirstName, a.last_name AS LastName, b.first_name AS Manager FROM employee a LEFT JOIN employee b ON a.manager_id = b.id",
     (err, res) => {
       console.table(res);
       userOptions();
