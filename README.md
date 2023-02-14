@@ -18,6 +18,8 @@ Manage employees with a command-line interface application using Node.js, Inquir
   Images:  
   ![image](https://user-images.githubusercontent.com/113393706/218890012-94332dd1-f055-4c46-a061-10e0b7367a8a.png)
   ![image](https://user-images.githubusercontent.com/113393706/218890116-c917c86c-9280-4b7f-a774-38398027769a.png)
+  ![image](https://user-images.githubusercontent.com/113393706/218890324-1912c402-2505-4a1e-8479-9705423d56ce.png)
+
 
 
   
