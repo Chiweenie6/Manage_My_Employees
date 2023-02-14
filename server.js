@@ -13,7 +13,7 @@ linkDB.connect((err) => {
   }
 });
 
-// Shows the user all options and ability to choose what to do
+// Shows the user all options and gives the ability to choose what to do
 const userOptions = () => {
   inquirer
     .prompt([
@@ -296,8 +296,8 @@ const deleteADepartment = () => {
             type: "list",
             name: "departmentName",
             message: "Select department to remove?",
-            choices: departmentList
-          }
+            choices: departmentList,
+          },
         ])
         .then((answer) => {
           let departmentID;
@@ -338,8 +338,8 @@ const deleteARole = () => {
             type: "list",
             name: "role",
             message: "Select company role to remove?",
-            choices: roleList
-          }
+            choices: roleList,
+          },
         ])
         .then((answer) => {
           let roleID;
@@ -418,7 +418,7 @@ const viewAllDepartments = () => {
   );
 };
 
-// View all employees showing id, name, job title, department, salary, manager
+// View all employees; showing id, name, job title, department, salary, manager
 const viewAllEmployees = () => {
   linkDB.query(
     "SELECT employee.id AS ID, employee.first_name AS FirstName, employee.last_name AS LastName, company_role.title AS Position, department.dep_name AS Department, company_role.salary AS Salary, b.first_name AS Manager From (((employee INNER JOIN company_role ON company_role.id = employee.role_id) INNER JOIN department ON department.id = company_role.department_id) LEFT JOIN employee b ON employee.manager_id = b.id) ORDER by employee.id ASC",
@@ -429,7 +429,7 @@ const viewAllEmployees = () => {
   );
 };
 
-// View all company roles showing role Id, job title, department, salary
+// View all company roles; showing role Id, job title, department, salary
 const viewAllRoles = () => {
   linkDB.query(
     "SELECT company_role.id AS ID, company_role.title AS Position, department.dep_name AS Department, company_role.salary AS Salary From company_role INNER JOIN department ON department.id = company_role.department_id ORDER by company_role.id ASC",
