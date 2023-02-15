@@ -583,8 +583,6 @@ const updateEmployeeManager = () => {
           },
         ])
         .then((answer) => {
-          console.log(answer);
-
           let managerID;
           let employeeID;
           res.forEach((employee) => {
@@ -593,14 +591,12 @@ const updateEmployeeManager = () => {
               employee.first_name + " " + employee.last_name
             ) {
               employeeID = employee.id;
-              console.log(employeeID + "💡");
             }
             if (
               answer.manager ===
               employee.first_name + " " + employee.last_name
             ) {
               managerID = employee.id;
-              console.log(managerID + "👀");
             }
           });
 
