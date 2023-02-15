@@ -15,7 +15,8 @@ Manage employees with a command-line interface application using Node.js, Inquir
 ## Description
   An application used to manage employee information using a command-line interface. Technologies involved include MySQL, Node.js and Inquirer. Gives the ability to view and alter employee information including adding new employees, company roles and departments as well as deleting old employees, roles and departments which are no longer being used and updating current employee information.
   
-  Video Demo Link:
+  Video Demo Link:  
+  https://drive.google.com/file/d/1DWXqDohn2NYblO5bcNe7ipfW5W_NWRMo/view
 
 
 
